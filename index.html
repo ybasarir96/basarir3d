@@ -9,6 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; color: #333; }
@@ -33,7 +36,7 @@
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800 tracking-tight">BASARIR 3D MALİYET SİSTEMİ</h1>
                     <div id="cloudStatus" class="text-xs font-semibold text-gray-500 flex items-center gap-1 mt-1">
-                        <span class="w-2 h-2 rounded-full bg-gray-400" id="cloudDot"></span> Yerel Hafıza (Offline Mod)
+                        <span class="w-2 h-2 rounded-full bg-gray-400" id="cloudDot"></span> Bağlanıyor...
                     </div>
                 </div>
             </div>
@@ -199,7 +202,7 @@
                     </div>
                     
                     <button onclick="saveQuote()" id="saveBtn" class="w-full mt-6 bg-[#212529] hover:bg-[#343a40] text-white font-bold py-4 px-4 rounded-xl transition duration-200 flex justify-center items-center gap-2 shadow-lg hover:shadow-xl">
-                        <i class="fas fa-save"></i> Teklifi Veritabanına Kaydet
+                        <i class="fas fa-save"></i> Teklifi Kaydet
                     </button>
                 </div>
 
@@ -282,7 +285,7 @@
                     <div id="machinesContainer" class="space-y-3 mb-4 max-h-48 overflow-y-auto pr-2"></div>
                     <div class="bg-purple-50 p-3 rounded-xl border border-purple-100 shadow-sm mt-4">
                         <h4 class="text-xs font-bold text-purple-700 mb-2">YENİ MAKİNE EKLE</h4>
-                        <input type="text" id="newMachineName" placeholder="Makine Adı (Örn: Voron)" class="w-full text-sm p-2 mb-2 rounded border outline-none focus:border-purple-400">
+                        <input type="text" id="newMachineName" placeholder="Makine Adı" class="w-full text-sm p-2 mb-2 rounded border outline-none focus:border-purple-400">
                         <div class="flex gap-2">
                             <input type="number" id="newMachineWatt" placeholder="Watt" class="w-1/2 text-sm p-2 rounded border outline-none focus:border-purple-400">
                             <input type="number" id="newMachineAmort" placeholder="Amort. ₺/Dk" step="0.01" class="w-1/2 text-sm p-2 rounded border outline-none focus:border-purple-400">
@@ -296,7 +299,7 @@
                     <div id="filamentsContainer" class="space-y-3 mb-4 max-h-48 overflow-y-auto pr-2"></div>
                     <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 shadow-sm mt-4">
                         <h4 class="text-xs font-bold text-blue-700 mb-2">YENİ FİLAMENT EKLE</h4>
-                        <input type="text" id="newFilamentName" placeholder="Filament Türü (Örn: Ahşap PLA)" class="w-full text-sm p-2 mb-2 rounded border outline-none focus:border-blue-400">
+                        <input type="text" id="newFilamentName" placeholder="Filament Türü" class="w-full text-sm p-2 mb-2 rounded border outline-none focus:border-blue-400">
                         <input type="number" id="newFilamentPrice" placeholder="KG Fiyatı (₺)" class="w-full text-sm p-2 rounded border outline-none focus:border-blue-400">
                         <button type="button" onclick="addFilament()" class="mt-3 w-full bg-blue-600 text-white text-sm py-2 rounded-lg font-bold hover:bg-blue-700 transition">Listeye Ekle ve Kaydet</button>
                     </div>
@@ -314,9 +317,38 @@
 
     <script>
         // ==========================================
-        // 1. VERİ YÖNETİMİ VE LOCALSTORAGE (v6)
-        // Firebase kapalı tutuldu, sistem doğrudan yerel hafızaya hatasız yazacak.
+        // 1. FIREBASE VE VERİ YÖNETİMİ
         // ==========================================
+        
+        // Kendi Firebase Bilgilerin
+        const firebaseConfig = {
+            apiKey: "AIzaSyAVeG5SmNwEGmybYtbohVhrvuEcZL5Lza0",
+            authDomain: "basarir3d-maliyet.firebaseapp.com",
+            databaseURL: "https://basarir3d-maliyet-default-rtdb.firebaseio.com",
+            projectId: "basarir3d-maliyet",
+            storageBucket: "basarir3d-maliyet.firebasestorage.app",
+            messagingSenderId: "189840569534",
+            appId: "1:189840569534:web:6a022adbaea37bc893daef",
+            measurementId: "G-Z4L8BML7E1"
+        };
+        
+        let useFirebase = false;
+
+        // Firebase Başlatma
+        try {
+            if (firebaseConfig.apiKey !== "") {
+                firebase.initializeApp(firebaseConfig);
+                window.db = firebase.database();
+                useFirebase = true;
+                
+                document.getElementById('cloudDot').className = "w-2 h-2 rounded-full bg-green-500";
+                document.getElementById('cloudStatus').innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span> Bulut Senkronizasyonu Aktif';
+            }
+        } catch (error) {
+            console.error("Firebase Hatası:", error);
+        }
+
+        // Varsayılan Veriler
         const defaultSettings = { kwhPrice: 2.50, laborRate: 200 };
         const defaultFilaments = { "PLA": 599, "PETG": 620, "ABS": 580, "TPU": 950 };
         const defaultMachines = {
@@ -326,11 +358,11 @@
             "DIY (RAMPS 1.4)": { watt: 150, amortisman: 0.15 }
         };
 
-        // Eski bozuk verileri temizlemek için versiyonu "v6" yaptık.
-        let dbSettings = JSON.parse(localStorage.getItem('b3d_settings_v6')) || defaultSettings;
-        let dbFilaments = JSON.parse(localStorage.getItem('b3d_filaments_v6')) || defaultFilaments;
-        let dbMachines = JSON.parse(localStorage.getItem('b3d_machines_v6')) || defaultMachines;
-        let dbQuotes = JSON.parse(localStorage.getItem('b3d_quotes_v6')) || [];
+        // Veritabanı Değişkenleri
+        let dbSettings = defaultSettings;
+        let dbFilaments = defaultFilaments;
+        let dbMachines = defaultMachines;
+        let dbQuotes = [];
 
         let currentFinalCostWithVat = 0;
         let currentSalesPrice = 0;
@@ -339,19 +371,54 @@
         const safeID = (str) => str.replace(/[^a-zA-Z0-9]/g, '_');
         const formatTRY = (value) => value.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 2 });
 
+        // Veri Kaydetme Fonksiyonu (Ekle/Sil butonlarının hatasız çalışmasını sağlar)
         function saveDataToStorage() {
-            localStorage.setItem('b3d_settings_v6', JSON.stringify(dbSettings));
-            localStorage.setItem('b3d_machines_v6', JSON.stringify(dbMachines));
-            localStorage.setItem('b3d_filaments_v6', JSON.stringify(dbFilaments));
-            localStorage.setItem('b3d_quotes_v6', JSON.stringify(dbQuotes));
+            if (useFirebase) {
+                window.db.ref('basarir3d/settings').set(dbSettings);
+                window.db.ref('basarir3d/machines').set(dbMachines);
+                window.db.ref('basarir3d/filaments').set(dbFilaments);
+                window.db.ref('basarir3d/quotes').set(dbQuotes);
+            } else {
+                localStorage.setItem('b3d_settings_v8', JSON.stringify(dbSettings));
+                localStorage.setItem('b3d_machines_v8', JSON.stringify(dbMachines));
+                localStorage.setItem('b3d_filaments_v8', JSON.stringify(dbFilaments));
+                localStorage.setItem('b3d_quotes_v8', JSON.stringify(dbQuotes));
+            }
         }
 
-        // --- 2. BAŞLANGIÇ YÜKLEMESİ ---
+        // ==========================================
+        // 2. BAŞLANGIÇ YÜKLEMESİ
+        // ==========================================
         function initApp() {
-            populateMachineDropdown();
-            renderTable();
-            addMaterialRow('PLA', 50);
-            setupListeners();
+            if (useFirebase) {
+                // Buluttan Veri Çek ve Dinle
+                window.db.ref('basarir3d/settings').on('value', (s) => { if(s.val()) { dbSettings = s.val(); calculateCosts(); }});
+                window.db.ref('basarir3d/filaments').on('value', (s) => { if(s.val()) { dbFilaments = s.val(); populateMachineDropdown(); }});
+                window.db.ref('basarir3d/machines').on('value', (s) => { if(s.val()) { dbMachines = s.val(); populateMachineDropdown(); }});
+                window.db.ref('basarir3d/quotes').on('value', (s) => { 
+                    dbQuotes = [];
+                    s.forEach(child => { dbQuotes.push(child.val()); });
+                    dbQuotes.sort((a, b) => b.id - a.id);
+                    renderTable();
+                });
+                
+                setTimeout(() => {
+                    populateMachineDropdown();
+                    addMaterialRow('PLA', 50);
+                    setupListeners();
+                }, 1500);
+            } else {
+                // Offline LocalStorage
+                dbSettings = JSON.parse(localStorage.getItem('b3d_settings_v8')) || defaultSettings;
+                dbFilaments = JSON.parse(localStorage.getItem('b3d_filaments_v8')) || defaultFilaments;
+                dbMachines = JSON.parse(localStorage.getItem('b3d_machines_v8')) || defaultMachines;
+                dbQuotes = JSON.parse(localStorage.getItem('b3d_quotes_v8')) || [];
+                
+                populateMachineDropdown();
+                renderTable();
+                addMaterialRow('PLA', 50);
+                setupListeners();
+            }
         }
 
         function setupListeners() {
@@ -378,7 +445,7 @@
             calculateCosts();
         }
         
-        // Özel Ok Butonları
+        // Yukarı Aşağı Okları İçin
         function changeMargin(amount) {
             const input = document.getElementById('customMarginInput');
             const slider = document.getElementById('customMarginSlider');
@@ -387,9 +454,7 @@
             if (newVal < 0) newVal = 0;
             
             input.value = newVal;
-            if(newVal <= parseInt(slider.max)) {
-                slider.value = newVal;
-            }
+            if(newVal <= parseInt(slider.max)) { slider.value = newVal; }
             updateCustomMargin();
         }
 
@@ -412,7 +477,9 @@
             });
         }
 
-        // --- 3. ÇOKLU MALZEME SİSTEMİ ---
+        // ==========================================
+        // 3. ÇOKLU MALZEME SİSTEMİ
+        // ==========================================
         function addMaterialRow(defaultType = null, defaultWeight = 0) {
             const container = document.getElementById('materialsContainer');
             const rowId = 'matRow_' + Date.now() + Math.floor(Math.random() * 1000);
@@ -462,7 +529,9 @@
             calculateCosts();
         }
 
-        // --- 4. HESAPLAMA MANTIĞI ---
+        // ==========================================
+        // 4. HESAPLAMALAR
+        // ==========================================
         function calculateCosts() {
             let totalMaterialCost = 0, totalWeight = 0;
             let matDetails = [];
@@ -524,7 +593,9 @@
             document.getElementById('priceCustom').innerText = formatTRY(currentSalesPrice);
         }
 
-        // --- 5. TEKLİF KAYDETME ---
+        // ==========================================
+        // 5. TEKLİF KAYDETME
+        // ==========================================
         function saveQuote() {
             const quoteId = Date.now();
             const quote = {
@@ -539,9 +610,13 @@
                 vatInfo: document.getElementById('outVatInfo').innerText
             };
 
-            dbQuotes.unshift(quote);
-            saveDataToStorage();
-            renderTable();
+            if (useFirebase) {
+                window.db.ref('basarir3d/quotes/' + quoteId).set(quote);
+            } else {
+                dbQuotes.unshift(quote);
+                saveDataToStorage();
+                renderTable();
+            }
             
             const btn = document.getElementById('saveBtn');
             const originalContent = btn.innerHTML;
@@ -555,9 +630,13 @@
 
         function deleteQuote(id) {
             if(confirm("Silmek istediğinize emin misiniz?")) {
-                dbQuotes = dbQuotes.filter(q => q.id !== id);
-                saveDataToStorage();
-                renderTable();
+                if (useFirebase) {
+                    window.db.ref('basarir3d/quotes/' + id).remove();
+                } else {
+                    dbQuotes = dbQuotes.filter(q => q.id !== id);
+                    saveDataToStorage();
+                    renderTable();
+                }
             }
         }
 
@@ -594,32 +673,28 @@
         }
 
         // ========================================================
-        // 6. PDF İNDİRME MANTIĞI (KESİN ÇÖZÜM)
-        // PDF'in kesilmemesi için sanal bir div yaratıp onu yazdırıyoruz.
+        // 6. PDF İNDİRME MANTIĞI (KESİN ÇÖZÜM - DİNAMİK YARATIM)
         // ========================================================
         function downloadPDF(id) {
             const q = dbQuotes.find(x => x.id === id);
             if(!q) return;
 
-            // Arka planda geçici bir PDF konteyneri oluştur (Sayfayı asla bozmaz, kesilmez)
+            // Sıfırdan bir div yarat, içine HTML'i bas
             const container = document.createElement('div');
             container.style.position = 'absolute';
             container.style.top = '0';
-            container.style.left = '0';
-            container.style.width = '794px'; // A4 Kağıdının pixel karşılığı
+            container.style.left = '-10000px'; // Ekranda görünmesin
+            container.style.width = '794px';   // A4 piksel karşılığı
             container.style.padding = '40px';
             container.style.background = 'white';
-            container.style.zIndex = '-9999';
-            container.style.color = '#333';
-            container.style.fontFamily = 'Arial, sans-serif';
-            container.style.boxSizing = 'border-box';
+            container.style.fontFamily = 'Inter, sans-serif';
 
             const vatText = q.vatInfo === "KDV'siz Net Fiyat" ? "GENEL TOPLAM" : `GENEL TOPLAM ${q.vatInfo}`;
 
             container.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #7e22ce; padding-bottom: 20px; margin-bottom: 30px;">
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <img src="BASARIR 3D LOGO.jpg" style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px; border: 1px solid #eee;" alt="Logo">
+                        <img src="BASARIR 3D LOGO.jpg" style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px; border: 1px solid #eee;" alt="Logo" onerror="this.style.display='none'">
                         <div>
                             <h1 style="margin: 0; color: #7e22ce; font-size: 28px; font-weight: bold; letter-spacing: -1px;">BASARIR 3D</h1>
                             <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13px;">Profesyonel 3D Baskı Çözümleri</p>
@@ -664,24 +739,26 @@
                 </div>
             `;
 
-            // HTML'i anlık olarak gövdeye ekle
+            // Oluşturulan yapıyı HTML'e ekle
             document.body.appendChild(container);
 
             const opt = {
                 margin: 10, 
                 filename: `Fiyat_Teklifi_${q.projectName.replace(/\s+/g, '_')}.pdf`,
                 image: { type: 'jpeg', quality: 1.0 },
-                html2canvas: { scale: 2, useCORS: true, scrollY: 0, windowWidth: 794 },
+                html2canvas: { scale: 2, useCORS: true, windowWidth: 794 }, // windowWidth zorunlu A4 genişliği
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             
+            // PDF'i üret ve sonra eklenen yapıyı sil
             html2pdf().set(opt).from(container).save().then(() => {
-                // PDF indikten sonra bu geçici şablonu tamamen sil (sayfayı kirletmez)
                 document.body.removeChild(container);
             });
         }
 
-        // --- 7. SİSTEM AYARLARI MODALI (EKLEME HATALARI ÇÖZÜLDÜ) ---
+        // ==========================================
+        // 7. SİSTEM AYARLARI MODALI (HATASIZ EKLEME)
+        // ==========================================
         function openSettings() {
             document.getElementById('set_kwh').value = dbSettings.kwhPrice;
             document.getElementById('set_labor').value = dbSettings.laborRate;
@@ -718,6 +795,7 @@
             }
         }
 
+        // Anında Ekle ve Kaydet Fonksiyonları
         function addMachine() {
             let name = document.getElementById('newMachineName').value.trim();
             let watt = parseFloat(document.getElementById('newMachineWatt').value) || 0;
@@ -728,7 +806,6 @@
                 document.getElementById('newMachineName').value = '';
                 document.getElementById('newMachineWatt').value = '';
                 document.getElementById('newMachineAmort').value = '';
-                
                 saveDataToStorage(); 
                 renderSettingsLists();
                 populateMachineDropdown();
@@ -745,7 +822,6 @@
                 dbFilaments[name] = price;
                 document.getElementById('newFilamentName').value = '';
                 document.getElementById('newFilamentPrice').value = '';
-                
                 saveDataToStorage();
                 renderSettingsLists();
                 populateMachineDropdown();
