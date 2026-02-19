@@ -23,8 +23,8 @@
         .breakdown-box { background-color: #e9ecef; border-radius: 0.75rem; padding: 1rem; }
         .total-box { background-color: #ffe3e3; border-radius: 0.75rem; padding: 1rem; color: #c92a2a; }
         
-        /* PDF Şablonu CSS'i (Artık daha sağlam render edilecek) */
-        #pdfTemplate { width: 800px; background: white; padding: 40px; color: #333; }
+        /* PDF Şablonu İçin Kesin Çözüm: A4 boyutuna uyumlu genişlik */
+        #pdfTemplate { width: 794px; background: white; padding: 40px; color: #333; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -33,7 +33,7 @@
         
         <div class="flex justify-between items-center mb-8 px-2">
             <div class="flex items-center gap-4">
-                <img src="BASARIR 3D LOGO.jpg" alt="Basarir 3D" class="w-16 h-16 rounded-xl object-cover shadow-sm bg-white" onerror="this.src='https://via.placeholder.com/64?text=LOGO'">
+                <img src="BASARIR 3D LOGO.jpg" alt="Basarir 3D" class="w-16 h-16 rounded-xl object-cover shadow-sm bg-white border border-gray-100" onerror="this.src='https://via.placeholder.com/64?text=LOGO'">
                 <h1 class="text-2xl font-bold text-gray-800 tracking-tight">BASARIR 3D Baskı Maliyet Hesaplayıcı</h1>
             </div>
             <div class="flex gap-2">
@@ -118,7 +118,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-red-500 mb-1"><i class="fas fa-percent mr-1"></i> KDV Oranı</label>
-                            <input type="number" id="vatRate" value="20" class="w-full input-bg border border-red-200 rounded-xl px-2 py-3 text-sm font-black text-red-700 text-center focus:outline-none">
+                            <input type="number" id="vatRate" value="20" class="w-full input-bg border border-red-200 rounded-xl px-2 py-3 text-sm font-black text-red-700 text-center focus:outline-none" title="% Cinsinden (0 yazılabilir)">
                         </div>
                     </div>
                 </div>
@@ -168,10 +168,12 @@
                         </div>
                         <div class="flex items-center gap-4 mb-1">
                             <input type="range" id="customMarginSlider" min="0" max="300" value="57" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-purple-600">
-                            <div class="bg-white px-3 py-1 rounded-md border border-gray-200 text-sm font-bold text-gray-700 w-16 text-center">
-                                <span id="customMarginText">57</span>%
+                            <div class="flex items-center bg-white px-2 py-1.5 rounded-md border border-gray-300 focus-within:border-purple-500 transition shadow-sm">
+                                <input type="number" id="customMarginInput" value="57" class="w-12 text-sm font-black text-gray-800 text-center outline-none">
+                                <span class="text-sm font-bold text-gray-400">%</span>
                             </div>
                         </div>
+                        <div class="text-right text-[10px] text-gray-400 mt-1">Yüzdeyi elle veya kaydırarak belirleyin</div>
                     </div>
                     
                     <button onclick="saveQuote()" id="saveBtn" class="w-full mt-6 bg-[#212529] hover:bg-[#343a40] text-white font-bold py-4 px-4 rounded-xl transition duration-200 flex justify-center items-center gap-2 shadow-lg hover:shadow-xl">
@@ -225,8 +227,7 @@
                             <th class="px-4 py-3 text-center rounded-tr-lg">İşlemler</th>
                         </tr>
                     </thead>
-                    <tbody id="savedQuotesBody" class="divide-y divide-gray-100">
-                        </tbody>
+                    <tbody id="savedQuotesBody" class="divide-y divide-gray-100"></tbody>
                 </table>
             </div>
         </div>
@@ -343,37 +344,35 @@
 
 
     <script>
-        // ==========================================
-        // FIREBASE BULUT VERİTABANI AYARLARI
-        // ==========================================
-        
-        // DİKKAT: Firebase kullanmak için kendi proje bilgilerini aşağıya yapıştırmalısın!
-        // Şu an boş olduğu için sistem otomatik olarak "Yerel Hafıza" modunda çalışır.
+        // --- FIREBASE AYARLARI ---
         const firebaseConfig = {
-    apiKey: "AIzaSyAVeG5SmNwEGmybYtbohVhrvuEcZL5Lza0",
-    authDomain: "basarir3d-maliyet.firebaseapp.com",
-    databaseURL: "https://basarir3d-maliyet-default-rtdb.firebaseio.com",
-    projectId: "basarir3d-maliyet",
-    storageBucket: "basarir3d-maliyet.firebasestorage.app",
-    messagingSenderId: "189840569534",
-    appId: "1:189840569534:web:6a022adbaea37bc893daef",
-    measurementId: "G-Z4L8BML7E1"
-  };
+            apiKey: "AIzaSyAVeG5SmNwEGmybYtbohVhrvuEcZL5Lza0",
+            authDomain: "basarir3d-maliyet.firebaseapp.com",
+            databaseURL: "https://basarir3d-maliyet-default-rtdb.firebaseio.com",
+            projectId: "basarir3d-maliyet",
+            storageBucket: "basarir3d-maliyet.firebasestorage.app",
+            messagingSenderId: "189840569534",
+            appId: "1:189840569534:web:6a022adbaea37bc893daef",
+            measurementId: "G-Z4L8BML7E1"
+        };
         let useFirebase = false;
         
-        // Eğer Firebase ayarları doldurulmuşsa başlat
         if (firebaseConfig.apiKey !== "") {
-            firebase.initializeApp(firebaseConfig);
-            window.db = firebase.database();
-            useFirebase = true;
-            document.getElementById('cloudStatus').innerHTML = '<i class="fas fa-cloud text-green-500 mr-2"></i> Bulut Senkronizasyonu Aktif';
-            document.getElementById('cloudStatus').classList.replace('text-gray-400', 'text-green-700');
-            document.getElementById('cloudStatus').classList.replace('bg-gray-100', 'bg-green-50');
-            document.getElementById('cloudStatus').classList.replace('border-gray-200', 'border-green-200');
+            try {
+                firebase.initializeApp(firebaseConfig);
+                window.db = firebase.database();
+                useFirebase = true;
+                
+                document.getElementById('cloudStatus').innerHTML = '<i class="fas fa-cloud text-green-500 mr-2"></i> Bulut Senkronizasyonu Aktif';
+                document.getElementById('cloudStatus').classList.replace('text-gray-400', 'text-green-700');
+                document.getElementById('cloudStatus').classList.replace('bg-gray-100', 'bg-green-50');
+                document.getElementById('cloudStatus').classList.replace('border-gray-200', 'border-green-200');
+            } catch (error) {
+                console.error("Firebase Hatası:", error);
+            }
         }
 
-        // --- 1. VERİ YÖNETİMİ ---
-
+        // --- VERİ YÖNETİMİ ---
         const defaultSettings = { kwhPrice: 2.50, laborRate: 200 };
         const defaultFilaments = { "PLA": 599, "PETG": 620, "ABS": 580, "TPU": 950 };
         const defaultMachines = {
@@ -395,30 +394,25 @@
         const safeID = (str) => str.replace(/[^a-zA-Z0-9]/g, '_');
         const formatTRY = (value) => value.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 2 });
 
-        // --- 2. BAŞLANGIÇ YÜKLEMESİ (Bulut veya Yerel) ---
+        // --- BAŞLANGIÇ YÜKLEMESİ ---
         function initApp() {
             if (useFirebase) {
-                // Firebase'den verileri dinle
                 window.db.ref('basarir3d/settings').on('value', (snapshot) => { if(snapshot.val()) dbSettings = snapshot.val(); });
                 window.db.ref('basarir3d/filaments').on('value', (snapshot) => { if(snapshot.val()) dbFilaments = snapshot.val(); populateMachineDropdown(); });
                 window.db.ref('basarir3d/machines').on('value', (snapshot) => { if(snapshot.val()) dbMachines = snapshot.val(); populateMachineDropdown(); });
                 window.db.ref('basarir3d/quotes').on('value', (snapshot) => { 
                     dbQuotes = [];
                     snapshot.forEach(child => { dbQuotes.push(child.val()); });
-                    // Tarihe göre yenisini üste al
                     dbQuotes.sort((a, b) => b.id - a.id);
                     renderTable();
                 });
                 
-                // İlk yükleme için biraz bekle ve arayüzü çiz
                 setTimeout(() => {
                     populateMachineDropdown();
                     addMaterialRow('PLA', 50);
                     setupListeners();
                 }, 1500);
-
             } else {
-                // Firebase Yoksa Yerel Hafıza (LocalStorage) Kullan
                 dbSettings = JSON.parse(localStorage.getItem('b3d_settings_v5')) || defaultSettings;
                 dbFilaments = JSON.parse(localStorage.getItem('b3d_filaments_v5')) || defaultFilaments;
                 dbMachines = JSON.parse(localStorage.getItem('b3d_machines_v5')) || defaultMachines;
@@ -433,7 +427,23 @@
 
         function setupListeners() {
             document.getElementById('machineType').addEventListener('change', calculateCosts);
-            document.getElementById('customMarginSlider').addEventListener('input', updateCustomMargin);
+            
+            // Slider ve Input Çift Yönlü Senkronizasyonu
+            const slider = document.getElementById('customMarginSlider');
+            const input = document.getElementById('customMarginInput');
+            
+            slider.addEventListener('input', (e) => {
+                input.value = e.target.value;
+                updateCustomMargin();
+            });
+            input.addEventListener('input', (e) => {
+                // Eğer manuel girilen değer slider max'ından büyükse slider'ı sınıra daya ama hesaplamaya girilen sayıyı gönder
+                if(parseInt(e.target.value) <= parseInt(slider.max)) {
+                    slider.value = e.target.value;
+                }
+                updateCustomMargin();
+            });
+
             const inputs = document.querySelectorAll('#projectName, #printHrs, #printMin, #laborMin, #hardwareCost, #packageCost, #shippingCost, #vatRate');
             inputs.forEach(input => input.addEventListener('input', calculateCosts));
             calculateCosts();
@@ -446,7 +456,6 @@
             for (let m in dbMachines) { machineSelect.add(new Option(m, m)); }
             if(dbMachines[currentMachine]) machineSelect.value = currentMachine;
             
-            // Mevcut malzeme satırlarının listelerini güncelle
             const matRows = document.querySelectorAll('#materialsContainer > div');
             matRows.forEach(row => {
                 const select = row.querySelector('.mat-type');
@@ -568,8 +577,8 @@
         }
 
         function updateCustomMargin() {
-            const margin = parseFloat(document.getElementById('customMarginSlider').value);
-            document.getElementById('customMarginText').innerText = margin;
+            // Yüzdeyi direkt input kutusundan okuyoruz (slider'dan bağımsız olarak gerçek değer orada)
+            const margin = parseFloat(document.getElementById('customMarginInput').value) || 0;
             currentSalesPrice = currentFinalCostWithVat * (1 + (margin / 100));
             document.getElementById('priceCustom').innerText = formatTRY(currentSalesPrice);
         }
@@ -651,7 +660,7 @@
             });
         }
 
-        // --- PDF İNDİRME MANTIĞI (DÜZELTİLDİ) ---
+        // --- KESİNTİSİZ PDF İNDİRME MANTIĞI ---
         function downloadPDF(id) {
             const q = dbQuotes.find(x => x.id === id);
             if(!q) return;
@@ -666,16 +675,17 @@
 
             const element = document.getElementById('pdfTemplate');
             
-            // Görünmezlik sınıfını geçici olarak kaldırıp html2canvas'ın sayfayı okumasını sağlıyoruz
+            // Görünmezlik sınıfını geçici olarak kaldırıp html2canvas'ın sayfayı A4 genişliğinde okumasını sağlıyoruz
             const wrapper = document.getElementById('pdfContainerWrapper');
             wrapper.style.visibility = 'visible';
             wrapper.style.zIndex = '9999';
             
+            // A4 formatına tam oturtmak için ölçekleme eklendi
             const opt = {
-                margin: 10, 
+                margin: 0, 
                 filename: `Fiyat_Teklifi_${q.projectName}.pdf`,
                 image: { type: 'jpeg', quality: 1.0 },
-                html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+                html2canvas: { scale: 2, useCORS: true, letterRendering: true, width: 794 }, // A4 genişliği piksel karşılığı
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             
@@ -793,7 +803,3 @@
     </script>
 </body>
 </html>
-
-
-
-
