@@ -28,16 +28,14 @@
   size: A4;
   margin: 0;
 }
-<div class="top-bar"></div>
+
 #pdfTemplate {
-
-.top-bar {
-  width: 100%;
-  height: 6mm;
-  background: linear-gradient(90deg, #6a00ff, #9b5cff);
-  margin-bottom: 12mm;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm;
+  box-sizing: border-box;
+  overflow: hidden;
 }
-
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -310,21 +308,29 @@
                 </div>
             </div>
             
-  <div class="header">
-  <div class="brand">
-    <img src="/logo.png" alt="Logo">
-    <div>
-      <h1>BASARIR 3D</h1>
-      <span>Profesyonel 3D Baskı Çözümleri</span>
+            <div class="mt-8 border-t pt-6">
+                <button type="button" onclick="saveSettings()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-4 rounded-xl transition duration-200 shadow-lg text-lg flex justify-center items-center gap-2">
+                    <i class="fas fa-save"></i> Tüm Ayarları Kaydet ve Kapat
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="doc-info">
-    <h2>FİYAT TEKLİFİ</h2>
-    <p>19.02.2026</p>
-  </div>
-</div>
-
+    <div id="pdfContainerWrapper" style="position: absolute; top: -10000px; left: -10000px; z-index: -999; visibility: hidden;">
+        <div id="pdfTemplate" style="font-family: 'Inter', sans-serif;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #7e22ce; padding-bottom: 20px; margin-bottom: 30px;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <img src="BASARIR 3D LOGO.jpg" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px; border: 1px solid #eee;" alt="Logo">
+                    <div>
+                        <h1 style="margin: 0; color: #7e22ce; font-size: 32px; font-weight: 800; letter-spacing: -1px;">BASARIR 3D</h1>
+                        <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px; font-weight: 500;">Profesyonel 3D Baskı Çözümleri</p>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <h2 style="margin: 0; font-size: 24px; color: #334155; font-weight: 700;">FİYAT TEKLİFİ</h2>
+                    <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px;" id="pdfDate">Tarih</p>
+                </div>
             </div>
             
             <div style="margin-bottom: 30px;">
@@ -884,8 +890,6 @@ wrapper.style.left = '0';
     </script>
 </body>
 </html>
-
-
 
 
 
