@@ -1,0 +1,16 @@
+{
+  "name": "Basarir 3D Maliyet",
+  "short_name": "Basarir 3D",
+  "description": "3D Baskı Maliyet Hesaplama Uygulaması",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "BASARIR 3D LOGO.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
