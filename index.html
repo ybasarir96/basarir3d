@@ -158,4 +158,781 @@
                     <h2 class="text-lg font-semibold text-gray-800 mb-6">Önerilen Fiyatlandırma</h2>
                     
                     <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="bg-[#e6fcf5] rounded-xl p-4 border border
+                        <div class="bg-[#e6fcf5] rounded-xl p-4 border border-[#c3fae8]">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-semibold text-[#0ca678]">Rekabetçi</span>
+                                <span class="text-lg font-bold text-[#087f5b]" id="priceComp">₺0,00</span>
+                            </div>
+                            <div class="text-[10px] text-[#0ca678]">%25 Kâr</div>
+                        </div>
+                        <div class="bg-[#e7f5ff] rounded-xl p-4 border border-[#d0ebff]">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-semibold text-[#1c7ed6]">Standart</span>
+                                <span class="text-lg font-bold text-[#1864ab]" id="priceStd">₺0,00</span>
+                            </div>
+                            <div class="text-[10px] text-[#1c7ed6]">%40 Kâr</div>
+                        </div>
+                        <div class="bg-[#fff3bf] rounded-xl p-4 border border-[#ffec99]">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-semibold text-[#f59f00]">Premium</span>
+                                <span class="text-lg font-bold text-[#e67700]" id="pricePrem">₺0,00</span>
+                            </div>
+                            <div class="text-[10px] text-[#f59f00]">%60 Kâr</div>
+                        </div>
+                        <div class="bg-[#f3d9fa] rounded-xl p-4 border border-[#eebefa]">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-semibold text-[#ae3ec9]">Lüks</span>
+                                <span class="text-lg font-bold text-[#862e9c]" id="priceLux">₺0,00</span>
+                            </div>
+                            <div class="text-[10px] text-[#ae3ec9]">%80 Kâr</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-2xl p-5 border border-gray-200">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-sm font-semibold text-gray-700"><i class="fas fa-hand-holding-usd mr-1 text-purple-500"></i> Özel Fiyatınız</span>
+                            <span class="text-2xl font-black text-purple-700" id="priceCustom">₺0,00</span>
+                        </div>
+                        <div class="flex items-center gap-4 mb-1">
+                            <input type="range" id="customMarginSlider" min="0" max="300" value="0" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer accent-purple-600">
+                            
+                            <div class="flex items-center bg-white pl-2 pr-1 py-1 rounded-lg border border-gray-300 focus-within:border-purple-500 transition shadow-sm">
+                                <input type="number" id="customMarginInput" value="0" class="w-10 text-sm font-black text-gray-800 text-center outline-none bg-transparent">
+                                <div class="flex flex-col ml-1 justify-center border-l pl-1 border-gray-100">
+                                    <button type="button" onclick="changeMargin(1)" class="text-gray-400 hover:text-purple-600 focus:outline-none h-4 flex items-center justify-center"><i class="fas fa-caret-up text-[14px]"></i></button>
+                                    <button type="button" onclick="changeMargin(-1)" class="text-gray-400 hover:text-purple-600 focus:outline-none h-4 flex items-center justify-center mt-[-2px]"><i class="fas fa-caret-down text-[14px]"></i></button>
+                                </div>
+                                <span class="text-sm font-bold text-gray-400 ml-1">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="saveQuote()" id="saveBtn" class="w-full mt-6 bg-[#212529] hover:bg-[#343a40] text-white font-bold py-4 px-4 rounded-xl transition duration-200 flex justify-center items-center gap-2 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-save"></i> Teklifi Veritabanına Kaydet
+                    </button>
+                </div>
+
+                <div class="bg-white p-6 md:p-8 rounded-3xl custom-shadow border border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-6">Detaylı Maliyet Dökümü</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="breakdown-box">
+                            <div class="text-xs text-gray-500 font-medium mb-1">Malzeme Maliyeti</div>
+                            <div class="text-lg font-bold text-gray-800" id="outMaterial">₺0,00</div>
+                        </div>
+                        <div class="breakdown-box border border-purple-200 bg-purple-50">
+                            <div class="text-xs text-purple-600 font-medium mb-1">Makine (Elek+Amort.)</div>
+                            <div class="text-lg font-bold text-purple-900" id="outMachine">₺0,00</div>
+                        </div>
+                        <div class="breakdown-box">
+                            <div class="text-xs text-gray-500 font-medium mb-1">İşçilik Maliyeti</div>
+                            <div class="text-lg font-bold text-gray-800" id="outLabor">₺0,00</div>
+                        </div>
+                        <div class="breakdown-box">
+                            <div class="text-xs text-gray-500 font-medium mb-1">Ekstralar + Kargo</div>
+                            <div class="text-lg font-bold text-gray-800" id="outExtra">₺0,00</div>
+                        </div>
+                        <div class="total-box col-span-2 flex justify-between items-center">
+                            <div>
+                                <div class="text-sm font-semibold mb-1">Toplam Nihai Maliyet</div>
+                                <div class="text-xs font-normal" id="outVatInfo">(%20 KDV)</div>
+                            </div>
+                            <div class="text-3xl font-black tracking-tight" id="outTotal">₺0,00</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="savedQuotesSection" class="mt-8 bg-white p-6 md:p-8 rounded-3xl custom-shadow border border-gray-100 hidden w-full">
+            <h2 class="text-lg font-semibold text-gray-800 mb-6 border-b border-gray-100 pb-4"><i class="fas fa-database text-purple-500 mr-2"></i> Kayıtlı Teklifler Arşivi</h2>
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-left text-sm text-gray-600">
+                    <thead class="bg-gray-50 text-gray-700 text-xs uppercase font-semibold">
+                        <tr>
+                            <th class="px-4 py-3 rounded-tl-lg">Tarih</th>
+                            <th class="px-4 py-3">Proje & Müşteri</th>
+                            <th class="px-4 py-3">Detaylı Malzeme Listesi</th>
+                            <th class="px-4 py-3">Satış Fiyatı</th>
+                            <th class="px-4 py-3 text-center rounded-tr-lg">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody id="savedQuotesBody" class="divide-y divide-gray-100"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex justify-center items-start pt-10 px-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl p-6 md:p-8 w-full max-w-3xl shadow-2xl mb-10">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h2 class="text-2xl font-bold text-gray-800"><i class="fas fa-cogs text-purple-600 mr-2"></i> Sistem Ayarları</h2>
+                <button onclick="closeSettings()" class="text-gray-400 hover:text-red-500 transition"><i class="fas fa-times text-2xl"></i></button>
+            </div>
+            
+            <div class="mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-200">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Elektrik Fiyatı (₺/kWh)</label>
+                        <input type="number" id="set_kwh" step="0.1" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-purple-500 font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">İşçilik Ücreti (₺/Saat)</label>
+                        <input type="number" id="set_labor" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-purple-500 font-bold">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-bold text-purple-800 mb-4 flex justify-between items-center text-sm uppercase tracking-wider">Makine Profilleri</h3>
+                    <div id="machinesContainer" class="space-y-3 mb-4 max-h-48 overflow-y-auto pr-2"></div>
+                    <div class="bg-purple-50 p-3 rounded-xl border border-purple-100 shadow-sm mt-4">
+                        <h4 class="text-xs font-bold text-purple-700 mb-2">YENİ MAKİNE EKLE</h4>
+                        <input type="text" id="newMachineName" placeholder="Makine Adı" class="w-full text-sm p-2 mb-2 rounded border outline-none focus:border-purple-400">
+                        <div class="flex gap-2">
+                            <input type="number" id="newMachineWatt" placeholder="Watt" class="w-1/2 text-sm p-2 rounded border outline-none focus:border-purple-400">
+                            <input type="number" id="newMachineAmort" placeholder="Amort. ₺/Dk" step="0.01" class="w-1/2 text-sm p-2 rounded border outline-none focus:border-purple-400">
+                        </div>
+                        <button type="button" onclick="addMachine()" class="mt-3 w-full bg-purple-600 text-white text-sm py-2 rounded-lg font-bold hover:bg-purple-700 transition">Listeye Ekle ve Kaydet</button>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-blue-800 mb-4 flex justify-between items-center text-sm uppercase tracking-wider">Filament Fiyatları</h3>
+                    <div id="filamentsContainer" class="space-y-3 mb-4 max-h-48 overflow-y-auto pr-2"></div>
+                    <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 shadow-sm mt-4">
+                        <h4 class="text-xs font-bold text-blue-700 mb-2">YENİ FİLAMENT EKLE</h4>
+                        <input type="text" id="newFilamentName" placeholder="Filament Türü" class="w-full text-sm p-2 mb-2 rounded border outline-none focus:border-blue-400">
+                        <input type="number" id="newFilamentPrice" placeholder="KG Fiyatı (₺)" class="w-full text-sm p-2 rounded border outline-none focus:border-blue-400">
+                        <button type="button" onclick="addFilament()" class="mt-3 w-full bg-blue-600 text-white text-sm py-2 rounded-lg font-bold hover:bg-blue-700 transition">Listeye Ekle ve Kaydet</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 border-t pt-6">
+                <button type="button" onclick="saveSettings()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-4 rounded-xl transition duration-200 shadow-lg text-lg flex justify-center items-center gap-2">
+                    <i class="fas fa-save"></i> Tüm Ayarları Kaydet ve Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pdfContainerWrapper" style="position: absolute; top: -10000px; left: -10000px; z-index: -999; visibility: hidden;">
+        <div id="pdfTemplate" style="font-family: 'Inter', sans-serif; color: #1e293b; background: #ffffff;">
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <img src="BASARIR 3D LOGO.jpg" style="width: 70px; height: 70px; object-fit: cover; border-radius: 12px; border: 1px solid #e2e8f0;" alt="Logo">
+                    <div>
+                        <h1 style="margin: 0; color: #0f172a; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">BASARIR 3D</h1>
+                        <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13px; font-weight: 500;">Profesyonel Üretim ve Prototipleme Merkezi</p>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <h2 style="margin: 0; font-size: 28px; color: #7e22ce; font-weight: 800; text-transform: uppercase;">Fiyat Teklifi</h2>
+                    <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px; font-weight: 600;">Teklif No: <span id="pdfQuoteNo" style="color: #0f172a;">#B3D-...</span></p>
+                    <p style="margin: 2px 0 0 0; color: #64748b; font-size: 13px;">Tarih: <span id="pdfDate" style="color: #0f172a;">...</span></p>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; background-color: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 30px;">
+                <div style="width: 45%;">
+                    <p style="margin: 0 0 5px 0; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Sayın / Yetkili</p>
+                    <p style="margin: 0; font-size: 14px; font-weight: 600; color: #334155;" id="pdfCustomerName">Değerli Müşterimiz</p>
+                </div>
+                <div style="width: 45%; text-align: right;">
+                    <p style="margin: 0 0 5px 0; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Proje Tanımı</p>
+                    <p style="margin: 0; font-size: 15px; font-weight: 700; color: #0f172a;" id="pdfProjectName">...</p>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 40px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                    <thead>
+                        <tr style="background-color: #f1f5f9; color: #475569;">
+                            <th style="padding: 12px 15px; font-weight: 600; border-bottom: 2px solid #cbd5e1; border-top-left-radius: 8px;">Üretim Parametresi</th>
+                            <th style="padding: 12px 15px; font-weight: 600; border-bottom: 2px solid #cbd5e1; border-top-right-radius: 8px;">Açıklama / Detay</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 15px; font-weight: 600; color: #334155; width: 35%;">Seçilen Üretim Parkuru</td>
+                            <td style="padding: 15px; color: #0f172a;" id="pdfMachine">...</td>
+                        </tr>
+                        <tr style="background-color: #fafbfc; border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 15px; font-weight: 600; color: #334155;">Kullanılan Sarf Malzemeler</td>
+                            <td style="padding: 15px; color: #0f172a;" id="pdfMaterial">...</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 15px; font-weight: 600; color: #334155;">Öngörülen Üretim Süresi</td>
+                            <td style="padding: 15px; color: #0f172a;" id="pdfTime">...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 50px;">
+                <div style="width: 50%; background-color: #fbfbfa; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 15px;">
+                        <span style="font-size: 14px; font-weight: 600; color: #64748b;" id="pdfVatLabel">Vergi Durumu</span>
+                        <span style="font-size: 14px; font-weight: 500; color: #334155;" id="pdfVatValue">Belirtilmedi</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 16px; font-weight: 800; color: #0f172a; text-transform: uppercase;">Genel Toplam</span>
+                        <span style="font-size: 32px; font-weight: 900; color: #7e22ce; letter-spacing: -0.5px;" id="pdfPrice">₺0.00</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="position: absolute; bottom: 20mm; left: 20mm; right: 20mm; border-top: 2px solid #f1f5f9; padding-top: 20px; font-size: 11px; color: #64748b; line-height: 1.6;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <p style="margin: 0 0 4px 0; font-weight: 700; color: #475569;">Şartlar ve Koşullar</p>
+                        <p style="margin: 0;">• Bu teklif oluşturulduğu tarihten itibaren 15 gün süreyle geçerlidir.<br>• Üretim, tasarımın onaylanması ve ödemenin tamamlanmasının ardından başlar.</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="margin: 0 0 4px 0; font-weight: 700; color: #475569;">İletişim & Fatura Bilgisi</p>
+                        <p style="margin: 0;">Esnaf Muafiyet Belgesi Kapsamında Üretilmiştir.<br>info@basarir3d.com | Türkiye</p>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        // --- FIREBASE AYARLARI ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAVeG5SmNwEGmybYtbohVhrvuEcZL5Lza0",
+            authDomain: "basarir3d-maliyet.firebaseapp.com",
+            databaseURL: "https://basarir3d-maliyet-default-rtdb.firebaseio.com",
+            projectId: "basarir3d-maliyet",
+            storageBucket: "basarir3d-maliyet.firebasestorage.app",
+            messagingSenderId: "189840569534",
+            appId: "1:189840569534:web:6a022adbaea37bc893daef",
+            measurementId: "G-Z4L8BML7E1"
+        };
+        let useFirebase = false;
+        
+        if (firebaseConfig.apiKey !== "") {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                window.db = firebase.database();
+                useFirebase = true;
+                
+                document.getElementById('cloudStatus').innerHTML = '<i class="fas fa-cloud text-green-500 mr-2"></i> Bulut Senkronizasyonu Aktif';
+                document.getElementById('cloudStatus').classList.replace('text-gray-400', 'text-green-700');
+                document.getElementById('cloudStatus').classList.replace('bg-gray-100', 'bg-green-50');
+                document.getElementById('cloudStatus').classList.replace('border-gray-200', 'border-green-200');
+            } catch (error) {
+                console.error("Firebase Hatası:", error);
+            }
+        }
+
+        // --- VERİ YÖNETİMİ ---
+        const defaultSettings = { kwhPrice: 2.50, laborRate: 200 };
+        const defaultFilaments = { "PLA": 599, "PETG": 620, "ABS": 580, "TPU": 950 };
+        const defaultMachines = {
+            "Elegoo Centauri Carbon 2": { watt: 300, amortisman: 0.50 },
+            "Bambu Lab P1S": { watt: 300, amortisman: 0.60 },
+            "Creality K1": { watt: 350, amortisman: 0.45 },
+            "DIY (RAMPS 1-4)": { watt: 150, amortisman: 0.15 } 
+        };
+
+        let dbSettings = defaultSettings;
+        let dbFilaments = defaultFilaments;
+        let dbMachines = defaultMachines;
+        let dbQuotes = [];
+
+        let currentFinalCostWithVat = 0;
+        let currentSalesPrice = 0;
+        let materialStringForDB = "";
+
+        const safeID = (str) => str.replace(/[^a-zA-Z0-9]/g, '_');
+        const formatTRY = (value) => value.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY', minimumFractionDigits: 2 });
+
+        // --- BAŞLANGIÇ YÜKLEMESİ ---
+        function initApp() {
+            if (useFirebase) {
+                window.db.ref('basarir3d/settings').on('value', (snapshot) => { if(snapshot.val()) dbSettings = snapshot.val(); });
+                window.db.ref('basarir3d/filaments').on('value', (snapshot) => { if(snapshot.val()) dbFilaments = snapshot.val(); populateMachineDropdown(); });
+                window.db.ref('basarir3d/machines').on('value', (snapshot) => { if(snapshot.val()) dbMachines = snapshot.val(); populateMachineDropdown(); });
+                window.db.ref('basarir3d/quotes').on('value', (snapshot) => { 
+                    dbQuotes = [];
+                    snapshot.forEach(child => { dbQuotes.push(child.val()); });
+                    dbQuotes.sort((a, b) => b.id - a.id);
+                    renderTable();
+                });
+                
+                setTimeout(() => {
+                    populateMachineDropdown();
+                    addMaterialRow('PLA', 50);
+                    setupListeners();
+                }, 1500);
+            } else {
+                dbSettings = JSON.parse(localStorage.getItem('b3d_settings_v5')) || defaultSettings;
+                dbFilaments = JSON.parse(localStorage.getItem('b3d_filaments_v5')) || defaultFilaments;
+                dbMachines = JSON.parse(localStorage.getItem('b3d_machines_v5')) || defaultMachines;
+                dbQuotes = JSON.parse(localStorage.getItem('b3d_quotes_v5')) || [];
+                
+                populateMachineDropdown();
+                renderTable();
+                addMaterialRow('PLA', 50);
+                setupListeners();
+            }
+        }
+
+        function setupListeners() {
+            document.getElementById('machineType').addEventListener('change', calculateCosts);
+            
+            const slider = document.getElementById('customMarginSlider');
+            const input = document.getElementById('customMarginInput');
+            
+            slider.addEventListener('input', (e) => {
+                input.value = e.target.value;
+                updateCustomMargin();
+            });
+            input.addEventListener('input', (e) => {
+                let val = parseInt(e.target.value) || 0;
+                if(val < 0) val = 0;
+                if(val > parseInt(slider.max)) val = parseInt(slider.max);
+                slider.value = val;
+                updateCustomMargin();
+            });
+
+            const inputs = document.querySelectorAll('#projectName, #printHrs, #printMin, #laborMin, #hardwareCost, #packageCost, #shippingCost, #vatRate');
+            inputs.forEach(input => input.addEventListener('input', calculateCosts));
+            calculateCosts();
+        }
+        
+        function changeMargin(amount) {
+            const input = document.getElementById('customMarginInput');
+            const slider = document.getElementById('customMarginSlider');
+            let newVal = (parseInt(input.value) || 0) + amount;
+            
+            if (newVal < 0) newVal = 0;
+            
+            input.value = newVal;
+            if(newVal <= parseInt(slider.max)) {
+                slider.value = newVal;
+            }
+            updateCustomMargin();
+        }
+
+        function populateMachineDropdown() {
+            const machineSelect = document.getElementById('machineType');
+            const currentMachine = machineSelect.value;
+            machineSelect.innerHTML = '';
+            for (let m in dbMachines) { machineSelect.add(new Option(m, m)); }
+            if(dbMachines[currentMachine]) machineSelect.value = currentMachine;
+            
+            const matRows = document.querySelectorAll('#materialsContainer > div');
+            matRows.forEach(row => {
+                const select = row.querySelector('.mat-type');
+                if (select) {
+                    const currentVal = select.value;
+                    select.innerHTML = '';
+                    for (let f in dbFilaments) { select.add(new Option(f, f)); }
+                    if(dbFilaments[currentVal]) select.value = currentVal;
+                }
+            });
+        }
+
+        // --- ÇOKLU MALZEME SİSTEMİ ---
+        function addMaterialRow(defaultType = null, defaultWeight = 0) {
+            const container = document.getElementById('materialsContainer');
+            const rowId = 'matRow_' + Date.now() + Math.floor(Math.random() * 1000);
+            const div = document.createElement('div');
+            div.id = rowId;
+            div.className = 'grid grid-cols-12 gap-2 items-end bg-gray-50 p-3 rounded-xl border border-gray-200 relative shadow-sm';
+            
+            div.innerHTML = `
+                <div class="col-span-12 md:col-span-5">
+                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Filament Türü</label>
+                    <select class="mat-type w-full input-bg border border-transparent rounded-lg px-2 py-2 text-sm font-bold text-gray-700 focus:outline-none cursor-pointer"></select>
+                </div>
+                <div class="col-span-6 md:col-span-3">
+                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">₺/kg Fiyatı</label>
+                    <input type="number" class="mat-price w-full bg-white border border-gray-200 rounded-lg px-2 py-2 text-sm font-medium text-gray-700 focus:outline-none">
+                </div>
+                <div class="col-span-4 md:col-span-3">
+                    <label class="block text-[10px] font-semibold text-gray-500 mb-1">Gramaj (g)</label>
+                    <input type="number" class="mat-weight w-full bg-white border border-gray-200 rounded-lg px-2 py-2 text-sm font-black text-purple-900 focus:outline-none" value="${defaultWeight}">
+                </div>
+                <div class="col-span-2 md:col-span-1 flex justify-center pb-1">
+                    <button type="button" onclick="removeMaterialRow('${rowId}')" class="text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition" title="Sil"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            container.appendChild(div);
+
+            const select = div.querySelector('.mat-type');
+            for (let f in dbFilaments) { select.add(new Option(f, f)); }
+            if (defaultType && dbFilaments[defaultType]) select.value = defaultType;
+            
+            const priceInput = div.querySelector('.mat-price');
+            priceInput.value = dbFilaments[select.value] || 0;
+
+            select.addEventListener('change', function(e) {
+                priceInput.value = dbFilaments[e.target.value] || 0;
+                calculateCosts();
+            });
+            priceInput.addEventListener('input', calculateCosts);
+            div.querySelector('.mat-weight').addEventListener('input', calculateCosts);
+            calculateCosts();
+        }
+
+        function removeMaterialRow(id) {
+            const row = document.getElementById(id);
+            if (row) row.remove();
+            if (document.getElementById('materialsContainer').children.length === 0) {
+                addMaterialRow();
+            }
+            calculateCosts();
+        }
+
+        // --- HESAPLAMA MANTIĞI ---
+        function calculateCosts() {
+            let totalMaterialCost = 0, totalWeight = 0;
+            let matDetails = [];
+
+            document.querySelectorAll('#materialsContainer > div').forEach(row => {
+                const type = row.querySelector('.mat-type').value;
+                const price = parseFloat(row.querySelector('.mat-price').value) || 0;
+                const weight = parseFloat(row.querySelector('.mat-weight').value) || 0;
+                if(weight > 0) {
+                    totalWeight += weight;
+                    totalMaterialCost += (price / 1000) * weight;
+                    matDetails.push(`${type} (${weight}g)`);
+                }
+            });
+
+            materialStringForDB = matDetails.length > 0 ? matDetails.join(' + ') : "Belirtilmedi";
+
+            const printHrs = parseFloat(document.getElementById('printHrs').value) || 0;
+            const printMin = parseFloat(document.getElementById('printMin').value) || 0;
+            const laborMin = parseFloat(document.getElementById('laborMin').value) || 0;
+            const hardwareCost = parseFloat(document.getElementById('hardwareCost').value) || 0;
+            const packageCost = parseFloat(document.getElementById('packageCost').value) || 0;
+            const shippingCost = parseFloat(document.getElementById('shippingCost').value) || 0;
+            const vatRate = parseFloat(document.getElementById('vatRate').value) || 0;
+
+            const machine = dbMachines[document.getElementById('machineType').value] || { watt: 0, amortisman: 0 };
+
+            const electricCost = (printHrs + (printMin / 60)) * (machine.watt / 1000) * dbSettings.kwhPrice;
+            const amortCost = ((printHrs * 60) + printMin) * machine.amortisman;
+            const machineTotalCost = electricCost + amortCost;
+
+            const laborCost = (laborMin / 60) * dbSettings.laborRate;
+            const extraCost = hardwareCost + packageCost + shippingCost;
+            
+            const subTotal = totalMaterialCost + machineTotalCost + laborCost + extraCost;
+            const vatAmount = subTotal * (vatRate / 100);
+            currentFinalCostWithVat = subTotal + vatAmount;
+
+            document.getElementById('totalWeightDisplay').innerText = `Ağırlık: ${totalWeight.toFixed(2)}g`;
+            document.getElementById('outMaterial').innerText = formatTRY(totalMaterialCost);
+            document.getElementById('outMachine').innerText = formatTRY(machineTotalCost);
+            document.getElementById('outLabor').innerText = formatTRY(laborCost);
+            document.getElementById('outExtra').innerText = formatTRY(extraCost);
+            
+            document.getElementById('outVatInfo').innerText = vatRate === 0 ? "KDV'siz Net Fiyat" : `(%${vatRate} KDV Dahil)`;
+            document.getElementById('outTotal').innerText = formatTRY(currentFinalCostWithVat);
+
+            document.getElementById('priceComp').innerText = formatTRY(currentFinalCostWithVat * 1.25);
+            document.getElementById('priceStd').innerText = formatTRY(currentFinalCostWithVat * 1.40);
+            document.getElementById('pricePrem').innerText = formatTRY(currentFinalCostWithVat * 1.60);
+            document.getElementById('priceLux').innerText = formatTRY(currentFinalCostWithVat * 1.80);
+
+            updateCustomMargin();
+        }
+
+        function updateCustomMargin() {
+            const margin = parseFloat(document.getElementById('customMarginInput').value) || 0;
+            currentSalesPrice = currentFinalCostWithVat * (1 + (margin / 100));
+            document.getElementById('priceCustom').innerText = formatTRY(currentSalesPrice);
+        }
+
+        // --- VERİTABANINA KAYDETME ---
+        function saveQuote() {
+            const quoteId = Date.now();
+            const quote = {
+                id: quoteId,
+                date: new Date().toLocaleDateString('tr-TR') + " " + new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
+                customerName: document.getElementById('customerName').value.trim() || "Belirtilmedi",
+                projectName: document.getElementById('projectName').value.trim() || "İsimsiz Proje",
+                machineName: document.getElementById('machineType').value,
+                materialInfo: materialStringForDB,
+                printTime: `${document.getElementById('printHrs').value}sa ${document.getElementById('printMin').value}dk`,
+                salesPrice: currentSalesPrice,
+                rawPriceStr: formatTRY(currentSalesPrice),
+                vatInfo: document.getElementById('outVatInfo').innerText
+            };
+
+            if (useFirebase) {
+                window.db.ref('basarir3d/quotes/' + quoteId).set(quote);
+            } else {
+                dbQuotes.unshift(quote);
+                localStorage.setItem('b3d_quotes_v5', JSON.stringify(dbQuotes));
+                renderTable();
+            }
+            
+            const btn = document.getElementById('saveBtn');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<i class="fas fa-check"></i> Kaydedildi!`;
+            btn.classList.replace('bg-[#212529]', 'bg-green-600');
+            setTimeout(() => { 
+                btn.innerHTML = originalContent; 
+                btn.classList.replace('bg-green-600', 'bg-[#212529]');
+            }, 2000);
+        }
+
+        function deleteQuote(id) {
+            if(confirm("Silmek istediğinize emin misiniz?")) {
+                if (useFirebase) {
+                    window.db.ref('basarir3d/quotes/' + id).remove();
+                } else {
+                    dbQuotes = dbQuotes.filter(q => q.id !== id);
+                    localStorage.setItem('b3d_quotes_v5', JSON.stringify(dbQuotes));
+                    renderTable();
+                }
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('savedQuotesBody');
+            tbody.innerHTML = '';
+            
+            if (dbQuotes.length === 0) {
+                document.getElementById('savedQuotesSection').classList.add('hidden');
+                return;
+            }
+            document.getElementById('savedQuotesSection').classList.remove('hidden');
+
+            dbQuotes.forEach(q => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition border-b border-gray-100 last:border-0";
+                const shareText = encodeURIComponent(`BASARIR 3D - Teklif\nMüşteri: ${q.customerName}\nProje: ${q.projectName}\nMakine: ${q.machineName}\nMalzeme: ${q.materialInfo}\nFiyat: ${q.rawPriceStr}`);
+                
+                tr.innerHTML = `
+                    <td class="px-4 py-4 text-xs text-gray-400 font-medium whitespace-nowrap">${q.date}</td>
+                    <td class="px-4 py-4">
+                        <div class="font-bold text-gray-800">${q.projectName}</div>
+                        <div class="text-[10px] text-gray-500 font-medium">${q.customerName}</div>
+                        <div class="text-[10px] text-purple-500 font-bold">${q.machineName}</div>
+                    </td>
+                    <td class="px-4 py-4 text-xs text-gray-500 max-w-[200px] break-words">${q.materialInfo}</td>
+                    <td class="px-4 py-4 font-black text-purple-700">${q.rawPriceStr} <span class="text-[10px] font-normal text-gray-400 block">${q.vatInfo || ''}</span></td>
+                    <td class="px-4 py-4 text-center">
+                        <div class="flex justify-center gap-2">
+                            <button onclick="downloadPDF(${q.id})" class="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg" title="PDF İndir"><i class="fas fa-file-pdf"></i></button>
+                            <a href="mailto:?subject=3D Baskı Teklifi&body=${shareText}" class="text-green-500 hover:text-green-700 bg-green-50 p-2 rounded-lg"><i class="fas fa-envelope"></i></a>
+                            <button onclick="deleteQuote(${q.id})" class="text-red-400 hover:text-red-600 bg-red-50 p-2 rounded-lg"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // ==========================================
+        // DÜZENLEME: PROFESYONEL PDF ÇIKTISI GÜNCELLENDİ
+        // ==========================================
+        function downloadPDF(id) {
+            const q = dbQuotes.find(x => x.id === id);
+            if(!q) return;
+
+            // Benzersiz bir teklif numarası oluştur (Örn: #B3D-1708345)
+            const quoteNumber = "#B3D-" + String(q.id).slice(-6); 
+
+            document.getElementById('pdfQuoteNo').innerText = quoteNumber;
+            document.getElementById('pdfDate').innerText = q.date.split(' ')[0];
+            document.getElementById('pdfCustomerName').innerText = q.customerName !== "Belirtilmedi" ? q.customerName : "Değerli Müşterimiz";
+            document.getElementById('pdfProjectName').innerText = q.projectName;
+            document.getElementById('pdfMachine').innerText = q.machineName;
+            document.getElementById('pdfMaterial').innerText = q.materialInfo;
+            document.getElementById('pdfTime').innerText = q.printTime;
+            
+            // KDV durumunu daha şık böl
+            if (q.vatInfo === "KDV'siz Net Fiyat") {
+                document.getElementById('pdfVatLabel').innerText = "KDV Durumu";
+                document.getElementById('pdfVatValue').innerText = "Muaf / Hariç";
+            } else {
+                document.getElementById('pdfVatLabel').innerText = "Uygulanan KDV";
+                document.getElementById('pdfVatValue').innerText = q.vatInfo.replace('(', '').replace(')', '');
+            }
+            
+            document.getElementById('pdfPrice').innerText = q.rawPriceStr;
+
+            const element = document.getElementById('pdfTemplate');
+            const wrapper = document.getElementById('pdfContainerWrapper');
+            
+            // Gizli yapıyı anlık olarak görünür yapıyoruz
+            wrapper.style.display = 'block';
+            wrapper.style.visibility = 'visible';
+            wrapper.style.position = 'absolute';
+            wrapper.style.top = '0';
+            wrapper.style.left = '0';
+
+            const opt = {
+                margin: 0,
+                filename: `Teklif_${q.projectName.replace(/\s+/g, '_')}_${quoteNumber}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    scrollY: 0
+                },
+                jsPDF: {
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait'
+                }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                wrapper.style.display = 'none'; // İşlem bitince tekrar gizle
+            });
+        }
+
+        // --- SİSTEM AYARLARI MODALI ---
+        function openSettings() {
+            document.getElementById('set_kwh').value = dbSettings.kwhPrice;
+            document.getElementById('set_labor').value = dbSettings.laborRate;
+            renderSettingsLists();
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); }
+
+        function renderSettingsLists() {
+            let mc = document.getElementById('machinesContainer');
+            mc.innerHTML = '';
+            for(let m in dbMachines) {
+                const sID = safeID(m);
+                mc.innerHTML += `
+                <div class="bg-white border border-gray-200 rounded p-2 text-sm flex items-center gap-2 shadow-sm">
+                    <span class="font-bold flex-1 truncate text-purple-900">${m}</span>
+                    <div class="flex flex-col"><span class="text-[9px] text-gray-400 mb-0.5">Watt</span><input type="number" id="edit_mwatt_${sID}" value="${dbMachines[m].watt}" class="w-14 text-xs font-bold bg-gray-50 px-1 py-1 rounded border border-gray-300 text-center outline-none"></div>
+                    <div class="flex flex-col"><span class="text-[9px] text-gray-400 mb-0.5">₺/Dk Amort.</span><input type="number" step="0.01" id="edit_mamort_${sID}" value="${dbMachines[m].amortisman}" class="w-16 text-xs font-bold bg-gray-50 px-1 py-1 rounded border border-gray-300 text-center outline-none"></div>
+                    <button type="button" onclick="deleteMachine('${m}')" class="text-red-400 hover:text-red-600 p-2 mt-3"><i class="fas fa-trash"></i></button>
+                </div>`;
+            }
+
+            let fc = document.getElementById('filamentsContainer');
+            fc.innerHTML = '';
+            for(let f in dbFilaments) {
+                const sID = safeID(f);
+                fc.innerHTML += `
+                <div class="bg-white border border-gray-200 rounded p-2 text-sm flex items-center gap-2 shadow-sm">
+                    <span class="font-bold flex-1 truncate text-blue-900">${f}</span>
+                    <div class="flex flex-col"><span class="text-[9px] text-gray-400 mb-0.5">KG Fiyatı (₺)</span><input type="number" id="edit_fprice_${sID}" value="${dbFilaments[f]}" class="w-20 text-xs font-bold bg-gray-50 px-2 py-1 rounded border border-gray-300 text-center outline-none"></div>
+                    <button type="button" onclick="deleteFilament('${f}')" class="text-red-400 hover:text-red-600 p-2 mt-3"><i class="fas fa-trash"></i></button>
+                </div>`;
+            }
+        }
+
+        function addMachine() {
+            let name = document.getElementById('newMachineName').value.trim();
+            name = name.replace(/[.#$\[\]]/g, '-'); 
+            
+            let watt = parseFloat(document.getElementById('newMachineWatt').value) || 0;
+            let amort = parseFloat(document.getElementById('newMachineAmort').value) || 0;
+            
+            if(name !== "") {
+                dbMachines[name] = { watt: watt, amortisman: amort };
+                document.getElementById('newMachineName').value = '';
+                document.getElementById('newMachineWatt').value = '';
+                document.getElementById('newMachineAmort').value = '';
+                
+                renderSettingsLists();
+                populateMachineDropdown();
+                
+                if (useFirebase) window.db.ref('basarir3d/machines').set(dbMachines);
+                else localStorage.setItem('b3d_machines_v5', JSON.stringify(dbMachines));
+            } else { alert("Lütfen makine adı girin."); }
+        }
+        function deleteMachine(name) { 
+            if(confirm(`${name} silinsin mi?`)) { 
+                delete dbMachines[name]; 
+                renderSettingsLists(); 
+                populateMachineDropdown(); 
+                if (useFirebase) window.db.ref('basarir3d/machines').set(dbMachines);
+                else localStorage.setItem('b3d_machines_v5', JSON.stringify(dbMachines));
+            } 
+        }
+
+        function addFilament() {
+            let name = document.getElementById('newFilamentName').value.trim();
+            name = name.replace(/[.#$\[\]]/g, '-'); 
+            
+            let price = parseFloat(document.getElementById('newFilamentPrice').value) || 0;
+            
+            if(name !== "") {
+                dbFilaments[name] = price;
+                document.getElementById('newFilamentName').value = '';
+                document.getElementById('newFilamentPrice').value = '';
+                
+                renderSettingsLists();
+                populateMachineDropdown();
+                
+                if (useFirebase) window.db.ref('basarir3d/filaments').set(dbFilaments);
+                else localStorage.setItem('b3d_filaments_v5', JSON.stringify(dbFilaments));
+            } else { alert("Lütfen filament türü adı girin."); }
+        }
+        function deleteFilament(name) { 
+            if(confirm(`${name} silinsin mi?`)) { 
+                delete dbFilaments[name]; 
+                renderSettingsLists(); 
+                populateMachineDropdown(); 
+                if (useFirebase) window.db.ref('basarir3d/filaments').set(dbFilaments);
+                else localStorage.setItem('b3d_filaments_v5', JSON.stringify(dbFilaments));
+            } 
+        }
+
+        function saveSettings() {
+            dbSettings.kwhPrice = parseFloat(document.getElementById('set_kwh').value) || 0;
+            dbSettings.laborRate = parseFloat(document.getElementById('set_labor').value) || 0;
+
+            for(let m in dbMachines) {
+                const sID = safeID(m);
+                const wInput = document.getElementById(`edit_mwatt_${sID}`);
+                const aInput = document.getElementById(`edit_mamort_${sID}`);
+                if(wInput && aInput) {
+                    dbMachines[m].watt = parseFloat(wInput.value) || 0;
+                    dbMachines[m].amortisman = parseFloat(aInput.value) || 0;
+                }
+            }
+
+            for(let f in dbFilaments) {
+                const sID = safeID(f);
+                const pInput = document.getElementById(`edit_fprice_${sID}`);
+                if(pInput) { dbFilaments[f] = parseFloat(pInput.value) || 0; }
+            }
+
+            if (useFirebase) {
+                window.db.ref('basarir3d/settings').set(dbSettings);
+                window.db.ref('basarir3d/machines').set(dbMachines);
+                window.db.ref('basarir3d/filaments').set(dbFilaments);
+            } else {
+                localStorage.setItem('b3d_settings_v5', JSON.stringify(dbSettings));
+                localStorage.setItem('b3d_machines_v5', JSON.stringify(dbMachines));
+                localStorage.setItem('b3d_filaments_v5', JSON.stringify(dbFilaments));
+            }
+            
+            closeSettings();
+            populateMachineDropdown();
+            calculateCosts();
+            
+            const btn = document.querySelector('button[onclick="openSettings()"]');
+            btn.innerHTML = `<i class="fas fa-check text-green-500"></i> Ayarlar Kaydedildi`;
+            setTimeout(() => { btn.innerHTML = `<i class="fas fa-sliders-h text-purple-600"></i> <span class="hidden md:inline">Sistem Ayarları</span>`; }, 2000);
+        }
+
+        window.onload = initApp;
+        
+    </script>
+</body>
+</html>
