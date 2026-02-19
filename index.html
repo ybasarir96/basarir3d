@@ -24,8 +24,18 @@
         .total-box { background-color: #ffe3e3; border-radius: 0.75rem; padding: 1rem; color: #c92a2a; }
         
         /* PDF Şablonu İçin Kesin Çözüm: A4 boyutuna uyumlu genişlik */
-       #pdfTemplate {
-    width: 210mm; min-height: 297mm; background: white; padding: 20mm; box-sizing: border-box; }
+       @page {
+  size: A4;
+  margin: 0;
+}
+
+#pdfTemplate {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm;
+  box-sizing: border-box;
+  overflow: hidden;
+}
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -710,25 +720,27 @@
             // Gizli yapıyı anlık olarak görünür yapıyoruz (Sayfanın en üstünde, arkada kalır)
 wrapper.style.display = 'block';
 wrapper.style.visibility = 'visible';
-wrapper.style.position = 'fixed';
+wrapper.style.position = 'absolute';
 wrapper.style.top = '0';
 wrapper.style.left = '0';
 
             
             const opt = {
-    margin: 0,
-    filename: `Fiyat_Teklifi_${q.projectName}.pdf`,
-    image: { type: 'jpeg', quality: 1 },
-    html2canvas: {
-        scale: 1,
-        useCORS: true
-    },
-    jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait'
-    }
+  margin: 0,
+  filename: `Fiyat_Teklifi_${q.projectName}.pdf`,
+  image: { type: 'jpeg', quality: 1 },
+  html2canvas: {
+    scale: 2,          // ⭐ EN KRİTİK SATIR
+    useCORS: true,
+    scrollY: 0
+  },
+  jsPDF: {
+    unit: 'mm',
+    format: 'a4',
+    orientation: 'portrait'
+  }
 };
+
 
             html2pdf().set(opt).from(element).save().then(() => {
                 wrapper.style.display = 'none'; // İşlem bitince tekrar gizle
@@ -878,6 +890,7 @@ wrapper.style.left = '0';
     </script>
 </body>
 </html>
+
 
 
 
